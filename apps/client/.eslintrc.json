@@ -1,0 +1,55 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react-hooks/recommended",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["react", "@typescript-eslint", "react-hooks", "prettier"],
+    "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "off",
+        "no-console": 0,
+        "no-shadow": 0,
+
+        "prettier/prettier": 0,
+
+        "@typescript-eslint/ban-ts-comment": "warn",
+        "@typescript-eslint/no-shadow": [
+            "warn",
+            {
+                "ignoreFunctionTypeParameterNameValueShadow": true,
+                "ignoreTypeValueShadow": true
+            }
+        ],
+        "no-debugger": "warn"
+    },
+    "ignorePatterns": ["*.md", "*.svg", "*.png", "*.webp", "*.css"],
+    "overrides": [
+        {
+            "files": ["*.test.ts", "spec.ts"],
+            "rules": {
+                "@typescript-eslint/no-explicit-any": "off"
+            }
+        }
+    ]
+}
+

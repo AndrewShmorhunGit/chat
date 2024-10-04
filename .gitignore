@@ -1,0 +1,17 @@
+# Ignore the node_modules directory in all packages
+**/node_modules
+
+# Ignore pnpm's store directory
+.pnpm
+
+# Ignore pnpm's lock file
+pnpm-lock.yaml
+
+# Ignore any build output or other generated files
+/build
+/dist
+/coverage
+
+# Environment
+
+.env
