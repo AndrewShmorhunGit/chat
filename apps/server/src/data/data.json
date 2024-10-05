@@ -2,21 +2,35 @@
   "users": [
     {
       "userId": 1,
-      "name": "Alice",
-      "sessionId": "abc123",
-      "status": "online"
+      "username": "Alice",
+      "password": "Topsecret1",
+      "sessionId": "4d9c65be-6398-452d-ab4c-79e543a37632",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcyODA1MDg3MSwiZXhwIjoxNzI4MDcyNDcxfQ.Is0yBnKQN0EhwCzgC4aOD4H1aaK8r4O5UZWU9eHnOkU",
+      "status": "offline"
     },
     {
       "userId": 2,
-      "name": "Bob",
-      "sessionId": "def456",
+      "username": "Bob",
+      "password": "Topsecret1",
+      "sessionId": "ef548a7d-64f9-40e7-b8ef-181b73158789",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTcyODExNjEwMywiZXhwIjoxNzI4MTM3NzAzfQ.v8_-RRqmCoJIWX_1YZyetp-YGYPc8SZY6ZGLZ8Mvx8s",
       "status": "offline"
     },
     {
       "userId": 3,
-      "name": "Charlie",
-      "sessionId": "ghi789",
+      "username": "Charlie",
+      "password": "Topsecret1",
+      "sessionId": "9330c64c-bf09-4fe8-a8ff-b71b0df064fa",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTcyODA1MDkyOCwiZXhwIjoxNzI4MDcyNTI4fQ.ZSTgh2M5W-VpQJTlJAyiNG9p8CwdCwbDX-w19Ogjetc",
       "status": "online"
+    },
+    {
+      "userId": "user-1728116846039",
+      "username": "Jim",
+      "password": "Topsecret111",
+      "sessionId": "d1abb5a3-0d5b-4c6b-9dc2-72c923843ebe",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTE3MjgxMTY4NDYwMzkiLCJpYXQiOjE3MjgxMTY4NDYsImV4cCI6MTcyODEzODQ0Nn0.z0cHVy1u9-5CSITn9iM5sCz_MtSua33ecefY4VzMQ2Y",
+      "status": "offline"
     }
   ],
   "chats": [
@@ -24,12 +38,19 @@
       "chatId": 1,
       "chatType": "group",
       "groupName": "Study Group",
-      "participants": [1, 2, 3]
+      "participants": [
+        1,
+        2,
+        3
+      ]
     },
     {
       "chatId": 2,
       "chatType": "private",
-      "participants": [1, 2]
+      "participants": [
+        1,
+        2
+      ]
     }
   ],
   "messages": [

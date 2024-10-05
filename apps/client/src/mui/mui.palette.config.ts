@@ -58,7 +58,7 @@ const LIGHT_PALETTE: ThemeOptions["palette"] = {
   secondary: {
     main: "#FF7043",
     dark: "#E64A19",
-    contrastText: "#FFFFFF",
+    contrastText: "#263238",
   },
   text: {
     primary: "#263238",
