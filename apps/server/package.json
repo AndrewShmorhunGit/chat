@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn src/server.ts",
     "db": "docker-compose up",
+    "db:migrate": "ts-node src/scripts/migration.db.ts",
     "build": "tsc"
   },
   "keywords": [],
