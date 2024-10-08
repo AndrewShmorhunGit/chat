@@ -12,14 +12,14 @@ import { Chat } from "@utils/types";
 
 interface ChatListProps {
   chats: Chat[];
-  currentUser: string;
+  currentUserId: string;
   onSelectChat: (chatId: string) => void;
   selectedChatId: string | null;
 }
 
 export const ChatList: React.FC<ChatListProps> = ({
   chats,
-  currentUser,
+  currentUserId,
   onSelectChat,
   selectedChatId,
 }) => {
@@ -30,10 +30,20 @@ export const ChatList: React.FC<ChatListProps> = ({
         {chats.length > 0 ? (
           chats.map((chat) => {
             const isGroupChat = chat.chatType === "group";
-            const displayName = isGroupChat
-              ? chat.groupName || "Unnamed Group"
-              : chat.participants.find((p) => p.participant !== currentUser)
-                  ?.participant || "Unknown User";
+            let displayName: string;
+
+            if (isGroupChat) {
+              displayName = chat.groupName || "Unnamed Group";
+            } else {
+              // Находим другого участника чата, отличного от текущего пользователя
+              const otherParticipant = Object.entries(chat.participants).find(
+                ([id]) => id !== currentUserId
+              );
+              displayName = otherParticipant
+                ? otherParticipant[1]
+                : "Unknown User";
+            }
+
             const chatType = isGroupChat ? "Group" : "Private";
             const avatarLetter = displayName.charAt(0).toUpperCase();
 

@@ -3,7 +3,10 @@ import { Message } from "@utils/types";
 class WebSocketClient {
   socket: WebSocket;
 
-  constructor(url: string, onUpdateMessages: (messages: Message) => void) {
+  constructor(
+    url: string,
+    onUpdateMessages: (message: Message | Message[]) => void
+  ) {
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
@@ -15,7 +18,11 @@ class WebSocketClient {
       console.log("Received message:", message);
 
       if (message.type === "UPDATE_MESSAGES") {
-        onUpdateMessages(message.messages); // Вызываем функцию обновления сообщений
+        // Если это обновление всех сообщений
+        onUpdateMessages(message.messages);
+      } else if (message.type === "NEW_MESSAGE") {
+        // Если это новое сообщение
+        onUpdateMessages(message.message);
       }
     };
 

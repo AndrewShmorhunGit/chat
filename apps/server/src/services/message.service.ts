@@ -1,5 +1,5 @@
 import { MessageModel } from "../models/message.model";
-import { v4 as uuidv4 } from "uuid"; // Используем UUID для генерации уникального идентификатора
+import { v4 as uuidv4 } from "uuid";
 
 // Функция для добавления сообщения в БД
 export const addMessage = async (
@@ -12,8 +12,8 @@ export const addMessage = async (
     senderId,
     timestamp: new Date().toISOString(),
     content,
-    type: "text", // для текста
-    messageId: uuidv4(), // Генерация уникального messageId
+    type: "text",
+    messageId: uuidv4(),
   });
   return await message.save();
 };

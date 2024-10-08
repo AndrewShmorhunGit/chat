@@ -80,3 +80,27 @@ export const sendMessage = async (
     throw error;
   }
 };
+
+export const createChat = async (
+  chatType: string,
+  participants: string[],
+  groupName?: string
+) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await api.post(
+      "/api/chats/create",
+      { chatType, participants, groupName },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating chat:", error);
+    throw error;
+  }
+};

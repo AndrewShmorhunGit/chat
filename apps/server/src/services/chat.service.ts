@@ -1,17 +1,14 @@
 import { ChatModel } from "../models/chat.model";
 import { MessageModel } from "../models/message.model";
 import { UserModel } from "../models/user.model";
+import { Chat } from "../types";
 
-interface Participant {
-  participantId: string;
-  participant: string;
+interface Participants {
+  [userId: string]: string; // ключ - userId, значение - userName
 }
 
 export const getChatsForUser = async (userId: string) => {
-  // Получаем чаты для данного пользователя
   const chats = await ChatModel.find({ participants: userId });
-
-  // Получаем данные о пользователе
   const user = await UserModel.findOne({ userId });
   const chatUser = user?.username || "Unknown User";
 
@@ -19,33 +16,17 @@ export const getChatsForUser = async (userId: string) => {
     chats.map(async (chat) => {
       const messages = await MessageModel.find({ chatId: chat.chatId });
 
-      const participantsDetails: Participant[] = await Promise.all(
-        chat.participants.map(async (participantId) => {
-          const participant = await UserModel.findOne({
-            userId: participantId,
-          });
-          return {
-            participantId,
-            participant: participant?.username || "Unknown",
-          };
-        })
-      );
-
-      // Разрешаем все сообщения для получения senderName
-      const messagesWithSenderNames = await Promise.all(
-        messages.map(async (message) => {
-          const sender = await UserModel.findOne({ userId: message.senderId });
-          return {
-            ...message.toObject(),
-            senderName: sender?.username || "Unknown",
-          };
-        })
-      );
+      // Создаем объект участников
+      const participantsDetails: Participants = {};
+      for (const participantId of chat.participants) {
+        const participant = await UserModel.findOne({ userId: participantId });
+        participantsDetails[participantId] = participant?.username || "Unknown";
+      }
 
       return {
         ...chat.toObject(),
         participants: participantsDetails,
-        messages: messagesWithSenderNames,
+        messages: messages.map((msg) => msg.toObject()),
       };
     })
   );
@@ -55,4 +36,21 @@ export const getChatsForUser = async (userId: string) => {
     userId,
     chats: chatDetails,
   };
+};
+
+export const createChatService = async (
+  chatType: string,
+  participants: string[],
+  groupName?: string
+): Promise<Chat> => {
+  const newChat = new ChatModel({
+    chatId: `chat-${Date.now()}`,
+    chatType,
+    participants,
+    groupName,
+  });
+
+  await newChat.save();
+
+  return newChat;
 };

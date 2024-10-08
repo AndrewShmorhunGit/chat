@@ -3,7 +3,7 @@ import { Chat } from "../types";
 
 const chatSchema = new Schema({
   chatId: {
-    type: Number,
+    type: String,
     required: true,
     unique: true,
   },
@@ -17,7 +17,7 @@ const chatSchema = new Schema({
     required: false,
   },
   participants: {
-    type: [Number],
+    type: [String],
     required: true,
   },
 });

@@ -11,4 +11,4 @@ httpServer.listen(httpPort, () => {
   console.log(`HTTP Server is running on http://localhost:${httpPort}`);
 });
 
-const wss = setupWebSocket(wsPort);
+export const wss = setupWebSocket(wsPort);
