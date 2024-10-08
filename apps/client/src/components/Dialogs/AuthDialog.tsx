@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
-  // DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   TextField,
   Tab,
   Tabs,
   Box,
   useTheme,
+  Button,
 } from "@mui/material";
+import { toast } from "react-toastify";
+import { loginUser, registerUser } from "../../services/api";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { useNavigate } from "react-router-dom";
 
 export const AuthDialog: React.FC<{
   open: boolean;
@@ -23,6 +26,8 @@ export const AuthDialog: React.FC<{
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (open) {
@@ -38,9 +43,9 @@ export const AuthDialog: React.FC<{
     setActiveTab(newValue);
   };
 
-  const validateUsername = (username: string): boolean => {
+  const validateUsername = (usernameToValidate: string): boolean => {
     const usernameRegex = /^[a-zA-Z]{3,}$/;
-    if (!usernameRegex.test(username)) {
+    if (!usernameRegex.test(usernameToValidate)) {
       setUsernameError(
         "Username must be at least 3 characters long and only contain Latin letters."
       );
@@ -50,9 +55,9 @@ export const AuthDialog: React.FC<{
     return true;
   };
 
-  const validatePassword = (password: string): boolean => {
+  const validatePassword = (passwordToValidate: string): boolean => {
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (!passwordRegex.test(password)) {
+    if (!passwordRegex.test(passwordToValidate)) {
       setPasswordError(
         "Password must be at least 8 characters, contain at least one uppercase letter and one number."
       );
@@ -62,29 +67,35 @@ export const AuthDialog: React.FC<{
     return true;
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
 
     if (isUsernameValid && isPasswordValid) {
-      if (activeTab === 0) {
-        // Handle login
-        console.log("Login", { username, password });
-        // Login functionality here
-      } else {
-        // Handle registration
-        console.log("Register", { username, password });
-        // Registration functionality here
+      setLoading(true);
+      try {
+        const response =
+          activeTab === 0
+            ? await loginUser({ username, password })
+            : await registerUser({ username, password });
+
+        toast.success("Success!");
+        localStorage.setItem("token", response.token);
+        navigate(`/user/${response.userId}`);
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
+        toast.error(`Error: ${errorMessage}`);
+      } finally {
+        setLoading(false);
       }
-      onClose();
     }
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      {/* <DialogTitle>{activeTab === 0 ? "Login" : "Register"}</DialogTitle> */}
       <DialogContent>
         <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="Login" />
@@ -123,14 +134,15 @@ export const AuthDialog: React.FC<{
             >
               Cancel
             </Button>
-            <Button
+            <LoadingButton
               variant="contained"
               type="submit"
               color="primary"
+              loading={loading}
               sx={{ width: "140px", textTransform: "capitalize" }}
             >
               {activeTab === 0 ? "Login" : "Register"}
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </Box>
       </DialogContent>

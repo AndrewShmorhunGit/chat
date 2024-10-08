@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6.0.5 # Конкретная версия MongoDB
+    container_name: mongo
+    ports:
+      - "27017:27017" # Пробрасываем порт MongoDB
+    volumes:
+      - mongo_data:/data/db # Сохраняем данные MongoDB в volume для постоянства
+
+volumes:
+  mongo_data: # Объявляем volume для MongoDB

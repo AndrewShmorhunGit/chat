@@ -11,11 +11,14 @@ import { LoginPage } from "@pages/LoginPage";
 
 import { PageHeader } from "@components/Header/PageHeader ";
 import { UserChat } from "@pages/UserChat";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function App(): React.ReactNode {
   return (
     <AppProvider>
       <Router>
+        <ToastContainer />
         <PageContainer>
           <PageWrapper>
             <PageHeader />

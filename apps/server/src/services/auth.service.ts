@@ -1,44 +1,29 @@
-import fs from "fs/promises";
-import path from "path";
+import { UserModel } from "../models/user.model";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { ChatData, User } from "../types";
+import { User } from "../types";
 
-const dataFilePath = path.join(__dirname, "../data/data.json");
 const JWT_SECRET = process.env.JWT_TOP_SECRET || "default_secret";
 
-const getChatData = async (): Promise<ChatData> => {
-  const data = await fs.readFile(dataFilePath, "utf8");
-  return JSON.parse(data);
-};
-
-const saveData = async (data: ChatData): Promise<void> => {
-  await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2));
-};
-
-export const loginUser = async (
+// Rename the function to avoid conflict
+export const loginUserService = async (
   username: string,
   password: string
 ): Promise<{ user: User | null; token: string; sessionId: string } | null> => {
-  const data = await getChatData();
-  const sessionId = uuidv4();
+  const user = await UserModel.findOne({ username });
 
-  const user = data.users.find((u) => u.username === username);
-
-  if (
-    !user ||
-    !password /* !(await bcrypt.compare(password, user.password))*/
-  ) {
+  if (!user || user.password !== password) {
     return null;
   }
 
+  const sessionId = uuidv4();
   const token = jwt.sign({ userId: user.userId }, JWT_SECRET, {
     expiresIn: "6h",
   });
 
   user.sessionId = sessionId;
   user.token = token;
-  await saveData(data);
+  await user.save(); // Save the user with the updated sessionId and token
 
   return { user, token, sessionId };
 };
@@ -47,31 +32,28 @@ export const registerUser = async (
   username: string,
   password: string
 ): Promise<{ user: User; token: string; sessionId: string }> => {
-  const data = await getChatData();
-  const sessionId = uuidv4();
-
   // Check if user already exists
-  const existingUser = data.users.find((u) => u.username === username);
+  const existingUser = await UserModel.findOne({ username });
   if (existingUser) {
     throw new Error("User already exists");
   }
 
-  const newUser = {
-    userId: `user-${Date.now()}`,
+  const sessionId = uuidv4();
+  const newUser = new UserModel({
+    userId: `user-${Date.now()}`, // You might want to let MongoDB handle this
     username,
-    password,
+    password, // Save password in plain text
     sessionId,
-    token: "",
+    token: "", // Token will be set later on login
     status: "offline",
-  } as User;
+  });
 
   const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
     expiresIn: "6h",
   });
   newUser.token = token;
 
-  data.users.push(newUser);
-  await saveData(data);
+  await newUser.save(); // Save the new user to the database
 
   return { user: newUser, token, sessionId };
 };

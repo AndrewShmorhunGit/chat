@@ -1,52 +1,55 @@
-import { WebSocketServer, WebSocket } from "ws";
-import fs from "fs";
-import path from "path";
+import { Server } from "ws";
+import WebSocket from "ws";
+import { getMessagesByChatId } from "../services/message.service";
 
-// Имитация MongoDB через чтение данных из JSON-файла
-const dataFilePath = path.join(__dirname, "../data/data.json");
+export const setupWebSocket = (port: number) => {
+  const wss = new Server({ port });
 
-const getData = () => {
-  const data = fs.readFileSync(dataFilePath, "utf8");
-  return JSON.parse(data);
-};
-
-const saveData = (newData: any) => {
-  fs.writeFileSync(dataFilePath, JSON.stringify(newData, null, 2), "utf8");
-};
-
-export const setupWebSocket = (wss: WebSocketServer) => {
   wss.on("connection", (ws: WebSocket) => {
-    console.log("New WebSocket connection");
+    console.log("New client connected");
 
-    // Обработка полученных сообщений
-    ws.on("message", (message) => {
+    ws.on("message", async (message) => {
       const parsedMessage = JSON.parse(message.toString());
-      const { userId, chatId, content } = parsedMessage;
 
-      // Эмулируем запись сообщения в "базу данных"
-      const data = getData();
-      const newMessage = {
-        messageId: Date.now(),
-        chatId,
-        senderId: userId,
-        timestamp: new Date().toISOString(),
-        content,
-        type: "text",
-      };
+      if (parsedMessage.type === "SEND_MESSAGE") {
+        const { chatId, userId, content } = parsedMessage;
 
-      data.messages.push(newMessage);
-      saveData(data);
+        // Отправка сообщения всем участникам чата
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(
+              JSON.stringify({
+                type: "NEW_MESSAGE",
+                chatId,
+                userId,
+                content,
+                timestamp: new Date().toISOString(),
+              })
+            );
+          }
+        });
 
-      // Транслируем сообщение всем подключенным пользователям
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(newMessage));
-        }
-      });
+        // Получаем все сообщения после отправки нового сообщения
+        const messages = await getMessagesByChatId(chatId);
+        // Рассылаем обновленный список сообщений всем участникам чата
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(
+              JSON.stringify({
+                type: "UPDATE_MESSAGES",
+                chatId,
+                messages, // отправляем обновленный список сообщений
+              })
+            );
+          }
+        });
+      }
     });
 
     ws.on("close", () => {
-      console.log("Connection closed");
+      console.log("Client disconnected");
     });
   });
+
+  return wss;
 };

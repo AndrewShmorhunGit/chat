@@ -11,20 +11,34 @@ export interface UsersData {
   data: User[];
 }
 
+interface Participant {
+  participantId: string;
+  participant: string;
+}
+
 export interface Message {
+  _id: string;
   messageId: string;
+  chatId: string;
   senderId: string;
-  text: string;
   timestamp: string;
+  content: string;
+  type: string;
+  senderName: string;
 }
 
 export interface Chat {
+  _id: string;
   chatId: string;
-  participants: string[];
+  chatType: "group" | "private";
+  groupName?: string;
+  participants: Participant[];
+  __v: number;
   messages: Message[];
 }
 
 export interface ChatData {
-  users: User[];
+  chatUser: string;
+  userId: string;
   chats: Chat[];
 }

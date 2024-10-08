@@ -25,7 +25,6 @@ import { FlexBox } from "@styles/StyledComponents/FlexBoxes";
 export const LoginPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  // const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [initialTab, setInitialTab] = useState(0);

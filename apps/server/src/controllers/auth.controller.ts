@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser } from "../services/auth.service";
+import { loginUserService, registerUser } from "../services/auth.service";
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
@@ -10,7 +10,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const loginResult = await loginUser(username, password);
+    const loginResult = await loginUserService(username, password); // Call the renamed service function
 
     if (!loginResult || !loginResult.user) {
       res.status(401).json({ error: "Invalid username or password" });
